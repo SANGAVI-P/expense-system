@@ -21,15 +21,16 @@ import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Transaction, TransactionCategory, TransactionType } from "@/lib/supabase/transactions";
 import { useTransactions } from "@/hooks/useTransactions";
+import { TRANSACTION_CATEGORIES, TRANSACTION_TYPES } from "@/lib/constants";
 
-const categories: TransactionCategory[] = ["Food", "Travel", "Bills", "Entertainment", "Salary", "Other"];
-const types: TransactionType[] = ["expense", "income"];
+const categories = TRANSACTION_CATEGORIES;
+const types = TRANSACTION_TYPES;
 
 const formSchema = z.object({
   description: z.string().optional(),
   amount: z.coerce.number().positive("Amount must be positive."),
-  type: z.enum(types),
-  category: z.enum(categories).optional(),
+  type: z.enum(types as [string, ...string[]]), // Zod enum requires a tuple
+  category: z.enum(categories as [string, ...string[]]).optional(),
   transaction_date: z.date(),
   receipt: z.any().optional(),
 });
