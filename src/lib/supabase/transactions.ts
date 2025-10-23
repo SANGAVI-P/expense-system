@@ -84,3 +84,61 @@ export async function getTransactions(): Promise<Transaction[]> {
   }
   return data as Transaction[];
 }
+
+export async function updateTransaction(
+  id: string,
+  data: Omit<Transaction, "id" | "user_id" | "created_at">,
+) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    showError("You must be logged in to update a transaction.");
+    return;
+  }
+
+  try {
+    const { error } = await supabase
+      .from("transactions")
+      .update({
+        description: data.description,
+        amount: data.amount,
+        type: data.type,
+        category: data.category,
+        transaction_date: data.transaction_date,
+      })
+      .eq("id", id)
+      .select();
+
+    if (error) throw error;
+
+    showSuccess("Transaction updated successfully!");
+    return true;
+  } catch (error) {
+    console.error("Error updating transaction:", error);
+    showError("Failed to update transaction.");
+    return false;
+  }
+}
+
+export async function deleteTransaction(id: string) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    showError("You must be logged in to delete a transaction.");
+    return false;
+  }
+
+  try {
+    const { error } = await supabase
+      .from("transactions")
+      .delete()
+      .eq("id", id);
+
+    if (error) throw error;
+
+    showSuccess("Transaction deleted successfully!");
+    return true;
+  } catch (error) {
+    console.error("Error deleting transaction:", error);
+    showError("Failed to delete transaction.");
+    return false;
+  }
+}

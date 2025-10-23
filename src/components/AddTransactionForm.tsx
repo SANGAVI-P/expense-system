@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -17,9 +17,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon, Upload } from "lucide-react";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
-import { addTransaction, TransactionCategory, TransactionType } from "@/lib/supabase/transactions";
+import { Transaction, TransactionCategory, TransactionType } from "@/lib/supabase/transactions";
+import { useTransactions } from "@/hooks/useTransactions";
 
 const categories: TransactionCategory[] = ["Food", "Travel", "Bills", "Entertainment", "Salary", "Other"];
 const types: TransactionType[] = ["expense", "income"];
@@ -37,20 +38,41 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface AddTransactionFormProps {
   onSuccess: () => void;
+  initialData?: Transaction;
 }
 
-export function AddTransactionForm({ onSuccess }: AddTransactionFormProps) {
+export function AddTransactionForm({ onSuccess, initialData }: AddTransactionFormProps) {
+  const { addTransaction, updateTransaction } = useTransactions();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const defaultValues: FormValues = initialData
+    ? {
+        description: initialData.description || "",
+        amount: initialData.amount,
+        type: initialData.type,
+        category: (initialData.category as TransactionCategory) || "Other",
+        transaction_date: parseISO(initialData.transaction_date),
+        receipt: undefined,
+      }
+    : {
+        description: "",
+        amount: 0,
+        type: "expense",
+        category: "Other",
+        transaction_date: new Date(),
+        receipt: undefined,
+      };
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      description: "",
-      amount: 0,
-      type: "expense",
-      category: "Other",
-      transaction_date: new Date(),
-    },
+    defaultValues,
   });
+
+  // Reset form when initialData changes (for dialog reuse)
+  useEffect(() => {
+    form.reset(defaultValues);
+  }, [initialData]);
+
 
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
@@ -64,7 +86,15 @@ export function AddTransactionForm({ onSuccess }: AddTransactionFormProps) {
       transaction_date: format(values.transaction_date, "yyyy-MM-dd"),
     };
 
-    const result = await addTransaction(transactionData, receiptFile);
+    let result = null;
+
+    if (initialData) {
+      // Editing existing transaction
+      result = await updateTransaction({ id: initialData.id, data: transactionData });
+    } else {
+      // Adding new transaction
+      result = await addTransaction({ data: transactionData, receiptFile });
+    }
     
     setIsSubmitting(false);
     if (result) {
@@ -185,47 +215,49 @@ export function AddTransactionForm({ onSuccess }: AddTransactionFormProps) {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="receipt"
-          render={({ field: { value, onChange, ...fieldProps } }) => (
-            <FormItem>
-              <FormLabel>Receipt/Bill (Optional)</FormLabel>
-              <FormControl>
-                <div className="flex items-center justify-center w-full">
-                  <label
-                    htmlFor="receipt-upload"
-                    className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted/70 transition-colors"
-                  >
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <Upload className="w-6 h-6 text-muted-foreground mb-1" />
-                      <p className="mb-1 text-sm text-muted-foreground">
-                        <span className="font-semibold">Click to upload</span> or drag and drop
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {value && value.length > 0 ? value[0].name : "PNG, JPG, PDF (Max 4MB)"}
-                      </p>
-                    </div>
-                    <Input
-                      {...fieldProps}
-                      id="receipt-upload"
-                      type="file"
-                      className="hidden"
-                      accept=".png, .jpg, .jpeg, .pdf"
-                      onChange={(event) => {
-                        onChange(event.target.files);
-                      }}
-                    />
-                  </label>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {!initialData && (
+          <FormField
+            control={form.control}
+            name="receipt"
+            render={({ field: { value, onChange, ...fieldProps } }) => (
+              <FormItem>
+                <FormLabel>Receipt/Bill (Optional)</FormLabel>
+                <FormControl>
+                  <div className="flex items-center justify-center w-full">
+                    <label
+                      htmlFor="receipt-upload"
+                      className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted/70 transition-colors"
+                    >
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <Upload className="w-6 h-6 text-muted-foreground mb-1" />
+                        <p className="mb-1 text-sm text-muted-foreground">
+                          <span className="font-semibold">Click to upload</span> or drag and drop
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {value && value.length > 0 ? value[0].name : "PNG, JPG, PDF (Max 4MB)"}
+                        </p>
+                      </div>
+                      <Input
+                        {...fieldProps}
+                        id="receipt-upload"
+                        type="file"
+                        className="hidden"
+                        accept=".png, .jpg, .jpeg, .pdf"
+                        onChange={(event) => {
+                          onChange(event.target.files);
+                        }}
+                      />
+                    </label>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : "Save Transaction"}
+          {isSubmitting ? "Saving..." : (initialData ? "Save Changes" : "Save Transaction")}
         </Button>
       </form>
     </Form>
