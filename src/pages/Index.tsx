@@ -1,6 +1,6 @@
-import { MadeWithDyad } from "@/components/made-with-dyad";
 import Header from "@/components/Header";
 import { AddTransactionDialog } from "@/components/AddTransactionDialog";
+import { AppFooter } from "@/components/AppFooter";
 
 const Index = () => {
   return (
@@ -18,7 +18,7 @@ const Index = () => {
           </div>
         </div>
       </main>
-      <MadeWithDyad />
+      <AppFooter />
     </div>
   );
 };
