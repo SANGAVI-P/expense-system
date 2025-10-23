@@ -1,4 +1,5 @@
 import React from 'react';
+import { ThemeToggle } from './ThemeToggle';
 
 const Header = () => {
   return (
@@ -8,6 +9,7 @@ const Header = () => {
           <div className="flex items-center">
             <h1 className="text-2xl font-bold text-foreground">ExpenseBox</h1>
           </div>
+          <ThemeToggle />
         </div>
       </div>
     </header>
