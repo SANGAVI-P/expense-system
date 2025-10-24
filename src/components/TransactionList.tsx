@@ -27,18 +27,12 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { AddTransactionDialog } from "./AddTransactionDialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { TransactionFilters } from "./TransactionFilters";
+import { formatCurrency } from "@/lib/utils"; // Import formatCurrency from utils
 
 interface TransactionListProps {
   transactions: Transaction[];
   isLoading: boolean;
 }
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(amount);
-};
 
 const getAmountColor = (type: Transaction["type"]) => {
   return type === "income" ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400";

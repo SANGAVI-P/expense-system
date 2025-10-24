@@ -10,6 +10,7 @@ import {
 } from 'recharts';
 import { Transaction } from '@/lib/supabase/transactions';
 import { subDays, format, parseISO } from 'date-fns';
+import { formatCurrency } from '@/lib/utils';
 
 interface SpendingChartProps {
   transactions: Transaction[];
@@ -30,10 +31,10 @@ const prepareChartData = (transactions: Transaction[]) => {
 
   // Aggregate expenses
   transactions.forEach(t => {
-    const date = parseISO(t.transaction_date);
-    const dateKey = format(date, 'yyyy-MM-dd');
+    const transactionDate = parseISO(t.transaction_date);
+    const dateKey = format(transactionDate, 'yyyy-MM-dd');
 
-    if (t.type === 'expense' && date >= thirtyDaysAgo) {
+    if (t.type === 'expense' && transactionDate >= thirtyDaysAgo) {
       const currentAmount = dailyExpenses.get(dateKey) || 0;
       dailyExpenses.set(dateKey, currentAmount + t.amount);
     }
@@ -73,7 +74,7 @@ export function SpendingChart({ transactions }: SpendingChartProps) {
           />
           <YAxis 
             stroke="hsl(var(--foreground))"
-            tickFormatter={(value) => `$${value.toFixed(0)}`}
+            tickFormatter={(value) => `₹${value.toFixed(0)}`} // Use Rupee symbol for axis
           />
           <Tooltip 
             contentStyle={{ 
@@ -81,7 +82,7 @@ export function SpendingChart({ transactions }: SpendingChartProps) {
               borderColor: 'hsl(var(--border))',
               borderRadius: 'var(--radius)',
             }}
-            formatter={(value: number) => [`$${value.toFixed(2)}`, 'Expense']}
+            formatter={(value: number) => [formatCurrency(value), 'Expense']} // Use utility function for tooltip
           />
           <Line 
             type="monotone" 
