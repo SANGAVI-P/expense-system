@@ -9,6 +9,7 @@ import { useTransactions } from '@/hooks/useTransactions';
 import { useBudgets } from '@/hooks/useBudgets';
 import { formatCurrency } from '@/lib/utils';
 import { format, startOfMonth } from 'date-fns';
+import { useReminders } from '@/hooks/useReminders'; // Import the new hook
 
 // Helper function to calculate summary data
 const calculateSummary = (transactions: any[]) => {
@@ -26,6 +27,9 @@ const calculateSummary = (transactions: any[]) => {
 };
 
 const Dashboard = () => {
+  // Initialize reminders check
+  useReminders(); 
+
   const { transactions, isLoading: isLoadingTransactions } = useTransactions();
   
   // Determine current month key for budget fetching (YYYY-MM-01)
