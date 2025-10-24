@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Header from "@/components/Header";
 import { AppFooter } from "@/components/AppFooter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, DollarSign, ArrowDown, ArrowUp } from "lucide-react";
+import { TrendingUp, DollarSign, ArrowDown, ArrowUp, Wallet } from "lucide-react";
 import { SpendingChart } from '@/components/SpendingChart';
+import { CategorySpendingChart } from '@/components/CategorySpendingChart';
 import { useTransactions } from '@/hooks/useTransactions';
+import { useBudgets } from '@/hooks/useBudgets';
 import { formatCurrency } from '@/lib/utils';
+import { format, startOfMonth } from 'date-fns';
 
 // Helper function to calculate summary data
 const calculateSummary = (transactions: any[]) => {
@@ -23,8 +26,17 @@ const calculateSummary = (transactions: any[]) => {
 };
 
 const Dashboard = () => {
-  const { transactions, isLoading } = useTransactions();
-  const summary = calculateSummary(transactions);
+  const { transactions, isLoading: isLoadingTransactions } = useTransactions();
+  
+  // Determine current month key for budget fetching (YYYY-MM-01)
+  const currentMonthKey = format(startOfMonth(new Date()), 'yyyy-MM-dd');
+  const { budgets, isLoading: isLoadingBudgets } = useBudgets(currentMonthKey);
+
+  const summary = useMemo(() => calculateSummary(transactions), [transactions]);
+  const isLoading = isLoadingTransactions || isLoadingBudgets;
+
+  // Calculate total budget for the current month
+  const totalBudget = budgets.reduce((sum, b) => sum + b.amount, 0);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -79,13 +91,13 @@ const Dashboard = () => {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Transactions</CardTitle>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium">Monthly Budget</CardTitle>
+                <Wallet className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{transactions.length}</div>
+                <div className="text-2xl font-bold">{formatCurrency(totalBudget)}</div>
                 <p className="text-xs text-muted-foreground">
-                  Total records in the system
+                  Total budget for {format(new Date(), 'MMMM')}
                 </p>
               </CardContent>
             </Card>
@@ -103,11 +115,10 @@ const Dashboard = () => {
           </Card>
           <Card className="lg:col-span-3">
             <CardHeader>
-              <CardTitle>Spending by Category</CardTitle>
+              <CardTitle>Category Spending vs. Budget</CardTitle>
             </CardHeader>
             <CardContent>
-              {/* Category breakdown will go here */}
-              <p className="text-muted-foreground">Category breakdown coming soon...</p>
+              <CategorySpendingChart transactions={transactions} budgets={budgets} />
             </CardContent>
           </Card>
         </div>
