@@ -15,6 +15,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Budget } from '@/lib/supabase/budgets';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { BudgetPieChart } from '@/components/BudgetPieChart';
 
 const Budgets = () => {
   const [selectedMonth, setSelectedMonth] = useState<Date>(startOfMonth(new Date()));
@@ -75,15 +76,34 @@ const Budgets = () => {
           <AddBudgetDialog month={monthKey} onBudgetSaved={() => setSelectedBudget(undefined)} />
         </div>
 
-        {/* Summary Card */}
-        <Card className="mb-8">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Budget for {format(selectedMonth, 'MMMM')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{formatCurrency(totalBudget)}</div>
-          </CardContent>
-        </Card>
+        {/* Budget Visualization and Summary */}
+        <div className="grid gap-4 lg:grid-cols-2 mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">Budget Allocation</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <Skeleton className="h-[350px] w-full" />
+              ) : (
+                <BudgetPieChart budgets={budgets} />
+              )}
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Budget for {format(selectedMonth, 'MMMM')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{formatCurrency(totalBudget)}</div>
+              <p className="text-sm text-muted-foreground mt-1">
+                Allocated across {budgets.length} categories.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
 
         {/* Budget List */}
         <Card>
