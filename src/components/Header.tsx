@@ -5,8 +5,9 @@ import { cn } from '@/lib/utils';
 
 const navItems = [
   { name: 'Transactions', href: '/' },
-  { name: 'Dashboard', href: '/dashboard' },
+  { name: 'Recurring', href: '/recurring' },
   { name: 'Budgets', href: '/budgets' },
+  { name: 'Dashboard', href: '/dashboard' },
 ];
 
 const Header = () => {
