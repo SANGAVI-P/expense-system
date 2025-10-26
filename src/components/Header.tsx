@@ -6,12 +6,13 @@ import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { showError } from '@/utils/toast';
+import { MobileNav } from './MobileNav';
 
 const navItems = [
-  { name: 'Transactions', href: '/' },
-  { name: 'Recurring', href: '/recurring' },
-  { name: 'Budgets', href: '/budgets' },
   { name: 'Dashboard', href: '/dashboard' },
+  { name: 'Transactions', href: '/' },
+  { name: 'Budgets', href: '/budgets' },
+  { name: 'Recurring', href: '/recurring' },
 ];
 
 const Header = () => {
@@ -30,7 +31,8 @@ const Header = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-primary mr-8">
+            <MobileNav />
+            <h1 className="text-2xl font-bold text-primary mr-8 ml-2 md:ml-0">
               <Link to="/">ExpenseBox</Link>
             </h1>
             <nav className="hidden md:flex space-x-4">
@@ -52,7 +54,7 @@ const Header = () => {
           </div>
           <div className="flex items-center space-x-2">
             <ThemeToggle />
-            <Button variant="ghost" size="icon" onClick={handleLogout} title="Logout">
+            <Button variant="ghost" size="icon" onClick={handleLogout} title="Logout" className="hidden md:inline-flex">
               <LogOut className="h-[1.2rem] w-[1.2rem]" />
             </Button>
           </div>
