@@ -2,6 +2,10 @@ import React from 'react';
 import { ThemeToggle } from './ThemeToggle';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { LogOut } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { showError } from '@/utils/toast';
 
 const navItems = [
   { name: 'Transactions', href: '/' },
@@ -12,6 +16,14 @@ const navItems = [
 
 const Header = () => {
   const location = useLocation();
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Logout error:", error);
+      showError("Failed to log out.");
+    }
+  };
 
   return (
     <header className="bg-card border-b border-border bg-gradient-to-r from-background/50 to-background/100 sticky top-0 z-10">
@@ -38,7 +50,12 @@ const Header = () => {
               ))}
             </nav>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center space-x-2">
+            <ThemeToggle />
+            <Button variant="ghost" size="icon" onClick={handleLogout} title="Logout">
+              <LogOut className="h-[1.2rem] w-[1.2rem]" />
+            </Button>
+          </div>
         </div>
       </div>
     </header>
