@@ -73,7 +73,12 @@ const Budgets = () => {
           </Popover>
 
           {/* Add Budget Button */}
-          <AddBudgetDialog month={monthKey} onBudgetSaved={() => setSelectedBudget(undefined)} />
+          <AddBudgetDialog 
+            month={monthKey} 
+            onBudgetSaved={() => setSelectedBudget(undefined)} 
+            // Key ensures the dialog resets when the month changes
+            key={`add-${monthKey}`}
+          />
         </div>
 
         {/* Budget Visualization and Summary */}
@@ -82,9 +87,9 @@ const Budgets = () => {
             <CardHeader>
               <CardTitle className="text-xl">Budget Allocation</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="h-[400px]"> {/* Added fixed height here */}
               {isLoading ? (
-                <div className="h-[400px] flex items-center justify-center"><Skeleton className="h-full w-full" /></div>
+                <div className="h-full flex items-center justify-center"><Skeleton className="h-full w-full" /></div>
               ) : (
                 <BudgetPieChart budgets={budgets} />
               )}
@@ -150,7 +155,6 @@ const Budgets = () => {
                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
                               <DropdownMenuItem onClick={() => handleEdit(budget)}>
                                 <Edit className="mr-2 h-4 w-4" />
-                                Edit
                               </DropdownMenuItem>
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
@@ -191,7 +195,7 @@ const Budgets = () => {
       </main>
       <AppFooter />
 
-      {/* Edit Dialog */}
+      {/* Edit Dialog - Rendered conditionally when a budget is selected for editing */}
       {selectedBudget && (
         <AddBudgetDialog
           initialData={selectedBudget}
