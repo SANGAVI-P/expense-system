@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, LogOut } from 'lucide-react';
+import { Menu, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
@@ -54,6 +54,19 @@ export function MobileNav() {
               {item.name}
             </Link>
           ))}
+           <Link
+              to="/profile"
+              onClick={() => setOpen(false)}
+              className={cn(
+                "flex items-center p-3 rounded-lg text-base font-medium transition-colors",
+                location.pathname === "/profile"
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                  : "text-foreground hover:bg-muted"
+              )}
+            >
+              <User className="mr-2 h-4 w-4" />
+              Profile
+            </Link>
         </nav>
         <div className="absolute bottom-4 left-4 right-4">
           <Button variant="outline" className="w-full justify-start" onClick={handleLogout}>

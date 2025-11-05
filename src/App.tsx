@@ -9,8 +9,9 @@ import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import Budgets from "./pages/Budgets";
 import RecurringTransactions from "./pages/RecurringTransactions";
-import Login from "./pages/Login"; // Import Login page
-import { AuthGuard } from "./components/AuthGuard"; // Import AuthGuard
+import Login from "./pages/Login";
+import Profile from "./pages/Profile"; // Import Profile page
+import { AuthGuard } from "./components/AuthGuard";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/budgets" element={<Budgets />} />
               <Route path="/recurring" element={<RecurringTransactions />} />
+              <Route path="/profile" element={<Profile />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
