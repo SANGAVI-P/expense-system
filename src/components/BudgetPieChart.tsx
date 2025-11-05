@@ -14,7 +14,17 @@ interface BudgetPieChartProps {
   budgets: Budget[];
 }
 
-const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+// Define a consistent color palette
+const COLORS = [
+  'hsl(260 70% 50%)', // Primary Purple
+  'hsl(142 71% 45%)', // Green
+  'hsl(48 96% 50%)',  // Yellow
+  'hsl(210 40% 98%)', // Light Gray
+  'hsl(0 84% 60%)',   // Red
+  'hsl(200 50% 50%)', // Blue
+  'hsl(300 50% 50%)', // Magenta
+  'hsl(100 50% 50%)', // Lime
+];
 
 const prepareChartData = (budgets: Budget[]) => {
   return budgets.map((budget, index) => ({
@@ -42,14 +52,14 @@ export function BudgetPieChart({ budgets }: BudgetPieChartProps) {
 
   if (data.length === 0) {
     return (
-      <div className="h-[350px] flex items-center justify-center text-muted-foreground">
+      <div className="h-full flex items-center justify-center text-muted-foreground">
         <p>No budgets set for this month to display in the chart.</p>
       </div>
     );
   }
 
   return (
-    <div className="h-[400px] w-full">
+    <div className="h-full w-full"> {/* Use h-full to fill parent container */}
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
@@ -59,7 +69,8 @@ export function BudgetPieChart({ budgets }: BudgetPieChartProps) {
             cx="50%"
             cy="50%"
             outerRadius={120}
-            fill="#8884d8"
+            // Ensure fill is set, although cells override it
+            fill="hsl(var(--primary))" 
             labelLine={false}
             label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
           >
