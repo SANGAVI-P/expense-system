@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { format, isWithinInterval, parseISO } from "date-fns";
-import { MoreHorizontal, Edit, Trash2, DollarSign, ArrowUp, ArrowDown } from "lucide-react";
+import { MoreHorizontal, Edit, Trash2, DollarSign, ArrowUp, ArrowDown, FileText } from "lucide-react";
 import { DateRange } from "react-day-picker";
 
 import {
@@ -27,7 +27,9 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { AddTransactionDialog } from "./AddTransactionDialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { TransactionFilters } from "./TransactionFilters";
-import { formatCurrency } from "@/lib/utils"; // Import formatCurrency from utils
+import { formatCurrency } from "@/lib/utils";
+import { getSignedReceiptUrl } from "@/lib/supabase/receipts";
+import { showError } from "@/utils/toast";
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -56,6 +58,15 @@ export function TransactionList({ transactions, isLoading }: TransactionListProp
 
   const handleEdit = (transaction: Transaction) => {
     setSelectedTransaction(transaction);
+  };
+  
+  const handleViewReceipt = async (receiptPath: string) => {
+    const url = await getSignedReceiptUrl(receiptPath);
+    if (url) {
+      window.open(url, '_blank');
+    } else {
+      showError("Could not generate receipt link.");
+    }
   };
 
   const handleClearFilters = () => {
@@ -157,6 +168,14 @@ export function TransactionList({ transactions, isLoading }: TransactionListProp
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        
+                        {transaction.receipt_path && (
+                          <DropdownMenuItem onClick={() => handleViewReceipt(transaction.receipt_path!)}>
+                            <FileText className="mr-2 h-4 w-4" />
+                            View Receipt
+                          </DropdownMenuItem>
+                        )}
+                        
                         <DropdownMenuItem onClick={() => handleEdit(transaction)}>
                           <Edit className="mr-2 h-4 w-4" />
                           Edit
