@@ -12,7 +12,9 @@ const Profile = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h2 className="text-3xl font-bold text-foreground mb-6">My Profile</h2>
+        <h2 className="text-3xl font-bold text-foreground mb-6 bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
+          My Profile
+        </h2>
         {isLoading ? (
           <div className="space-y-6">
             <Skeleton className="h-48 w-full" />

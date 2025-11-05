@@ -12,7 +12,9 @@ const RecurringTransactions = () => {
       <Header />
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-3xl font-bold text-foreground">Recurring Transactions</h2>
+          <h2 className="text-3xl font-bold text-foreground bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
+            Recurring Transactions
+          </h2>
           <AddRecurringTransactionDialog />
         </div>
         <div className="bg-card shadow-lg rounded-xl border border-border">
