@@ -127,7 +127,11 @@ const Budgets = () => {
                 <Skeleton className="h-10 w-full" />
               </div>
             ) : budgets.length === 0 ? (
-              <p className="p-4 text-muted-foreground">No budgets set for this month.</p>
+              <div className="p-8 text-center text-muted-foreground">
+                <span className="text-5xl mb-4 block">🐖</span>
+                <p className="font-semibold">No budgets set for this month.</p>
+                <p className="text-sm">Click "Set Budget" to get started!</p>
+              </div>
             ) : (
               <div className="overflow-x-auto">
                 <Table>

@@ -97,3 +97,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Add custom animated classes */
+@layer components {
+  .animated-card {
+    @apply transition-all duration-200 ease-in-out;
+  }
+  .animated-card:hover {
+    @apply shadow-xl -translate-y-1;
+  }
+}

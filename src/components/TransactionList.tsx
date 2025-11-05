@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { format, isWithinInterval, parseISO } from "date-fns";
-import { MoreHorizontal, Edit, Trash2, DollarSign, ArrowUp, ArrowDown, FileText } from "lucide-react";
+import { MoreHorizontal, Edit, Trash2, DollarSign, ArrowUp, ArrowDown, FileText, Filter } from "lucide-react";
 import { DateRange } from "react-day-picker";
 
 import {
@@ -122,15 +122,15 @@ export function TransactionList({ transactions, isLoading }: TransactionListProp
 
       {showEmptyState ? (
         <div className="p-8 text-center text-muted-foreground">
-          <DollarSign className="mx-auto h-12 w-12 mb-4 text-primary/50" />
-          <p className="text-lg font-semibold">No transactions recorded yet.</p>
-          <p className="text-sm">Start by adding your first expense or income.</p>
+          <span className="text-5xl mb-4 block">💸</span>
+          <p className="text-lg font-semibold">No transactions yet.</p>
+          <p className="text-sm">Ready to track your finances? Add your first transaction!</p>
         </div>
       ) : showNoResults ? (
         <div className="p-8 text-center text-muted-foreground">
-          <Filter className="mx-auto h-12 w-12 mb-4 text-primary/50" />
-          <p className="text-lg font-semibold">No results found.</p>
-          <p className="text-sm">Try adjusting your filters.</p>
+          <span className="text-5xl mb-4 block">🧐</span>
+          <p className="text-lg font-semibold">No matching transactions.</p>
+          <p className="text-sm">Try adjusting your filters to see more results.</p>
         </div>
       ) : (
         <div className="overflow-x-auto">

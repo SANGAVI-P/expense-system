@@ -57,7 +57,7 @@ const Dashboard = () => {
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-            <Card>
+            <Card className="animated-card">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Net Balance</CardTitle>
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -69,7 +69,7 @@ const Dashboard = () => {
                 </p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="animated-card">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Income</CardTitle>
                 <ArrowUp className="h-4 w-4 text-green-500" />
@@ -81,7 +81,7 @@ const Dashboard = () => {
                 </p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="animated-card">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
                 <ArrowDown className="h-4 w-4 text-red-500" />
@@ -93,7 +93,7 @@ const Dashboard = () => {
                 </p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="animated-card">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Monthly Budget</CardTitle>
                 <Wallet className="h-4 w-4 text-muted-foreground" />

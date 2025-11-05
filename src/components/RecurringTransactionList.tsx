@@ -74,9 +74,9 @@ export function RecurringTransactionList({ recurringTransactions, isLoading }: R
   if (recurringTransactions.length === 0) {
     return (
       <div className="p-8 text-center text-muted-foreground">
-        <Repeat className="mx-auto h-12 w-12 mb-4 text-primary/50" />
-        <p className="text-lg font-semibold">No recurring transactions set up.</p>
-        <p className="text-sm">Add subscriptions, rent, or salaries to automate tracking.</p>
+        <span className="text-5xl mb-4 block">🔄</span>
+        <p className="text-lg font-semibold">No recurring transactions found.</p>
+        <p className="text-sm">Set up automatic payments like rent or subscriptions.</p>
       </div>
     );
   }
