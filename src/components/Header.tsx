@@ -10,6 +10,7 @@ const navItems = [
   { name: 'Transactions', href: '/' },
   { name: 'Budgets', href: '/budgets' },
   { name: 'Recurring', href: '/recurring' },
+  { name: 'Profile', href: '/profile' },
 ];
 
 const Header = () => {
