@@ -20,8 +20,9 @@ export function useBudgets(month: string) {
   // Mutation for adding/updating a budget
   const upsertMutation = useMutation({
     mutationFn: upsertBudget,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: BUDGET_QUERY_KEY });
+    onSuccess: (_data, variables) => {
+      // Invalidate the query for the specific month that was changed
+      queryClient.invalidateQueries({ queryKey: [...BUDGET_QUERY_KEY, variables.month] });
     },
   });
 
@@ -29,6 +30,7 @@ export function useBudgets(month: string) {
   const deleteMutation = useMutation({
     mutationFn: deleteBudget,
     onSuccess: () => {
+      // Invalidate all budget queries as we don't know which month was affected from just the ID
       queryClient.invalidateQueries({ queryKey: BUDGET_QUERY_KEY });
     },
   });

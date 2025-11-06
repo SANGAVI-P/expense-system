@@ -2,11 +2,11 @@ import React, { useState, useMemo } from 'react';
 import Header from "@/components/Header";
 import { AppFooter } from "@/components/AppFooter";
 import { useBudgets } from '@/hooks/useBudgets';
-import { format, startOfMonth, parseISO } from 'date-fns';
+import { format, startOfMonth } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { CalendarIcon, MoreHorizontal, Trash2, Edit } from 'lucide-react';
+import { CalendarIcon, MoreHorizontal, Trash2, Edit, PlusCircle } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn, formatCurrency } from '@/lib/utils';
@@ -22,6 +22,8 @@ const Budgets = () => {
   const monthKey = format(selectedMonth, 'yyyy-MM-dd');
   
   const { budgets, isLoading, deleteBudget } = useBudgets(monthKey);
+  
+  const [isBudgetDialogOpen, setIsBudgetDialogOpen] = useState(false);
   const [selectedBudget, setSelectedBudget] = useState<Budget | undefined>(undefined);
 
   const totalBudget = useMemo(() => budgets.reduce((sum, b) => sum + b.amount, 0), [budgets]);
@@ -30,8 +32,21 @@ const Budgets = () => {
     await deleteBudget(id);
   };
 
-  const handleEdit = (budget: Budget) => {
+  const handleOpenEditDialog = (budget: Budget) => {
     setSelectedBudget(budget);
+    setIsBudgetDialogOpen(true);
+  };
+
+  const handleOpenAddDialog = () => {
+    setSelectedBudget(undefined);
+    setIsBudgetDialogOpen(true);
+  };
+
+  const handleDialogStateChange = (open: boolean) => {
+    setIsBudgetDialogOpen(open);
+    if (!open) {
+      setSelectedBudget(undefined); // Clear selection when dialog closes
+    }
   };
 
   const handleMonthChange = (date: Date | undefined) => {
@@ -54,9 +69,7 @@ const Budgets = () => {
             <PopoverTrigger asChild>
               <Button
                 variant={"outline"}
-                className={cn(
-                  "w-[200px] justify-start text-left font-normal",
-                )}
+                className={cn("w-[200px] justify-start text-left font-normal")}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {format(selectedMonth, "MMMM yyyy")}
@@ -75,12 +88,10 @@ const Budgets = () => {
           </Popover>
 
           {/* Add Budget Button */}
-          <AddBudgetDialog 
-            month={monthKey} 
-            onBudgetSaved={() => setSelectedBudget(undefined)} 
-            // Key ensures the dialog resets when the month changes
-            key={`add-${monthKey}`}
-          />
+          <Button onClick={handleOpenAddDialog}>
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Set Budget
+          </Button>
         </div>
 
         {/* Budget Visualization and Summary */}
@@ -89,7 +100,7 @@ const Budgets = () => {
             <CardHeader>
               <CardTitle className="text-xl">Budget Allocation</CardTitle>
             </CardHeader>
-            <CardContent className="h-[400px]"> {/* Added fixed height here */}
+            <CardContent className="h-[400px]">
               {isLoading ? (
                 <div className="h-full flex items-center justify-center"><Skeleton className="h-full w-full" /></div>
               ) : (
@@ -115,7 +126,6 @@ const Budgets = () => {
             </CardContent>
           </Card>
         </div>
-
 
         {/* Budget List */}
         <Card>
@@ -159,8 +169,9 @@ const Budgets = () => {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem onClick={() => handleEdit(budget)}>
+                              <DropdownMenuItem onClick={() => handleOpenEditDialog(budget)}>
                                 <Edit className="mr-2 h-4 w-4" />
+                                Edit
                               </DropdownMenuItem>
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
@@ -201,16 +212,14 @@ const Budgets = () => {
       </main>
       <AppFooter />
 
-      {/* Edit Dialog - Rendered conditionally when a budget is selected for editing */}
-      {selectedBudget && (
-        <AddBudgetDialog
-          initialData={selectedBudget}
-          month={monthKey}
-          trigger={<></>}
-          onBudgetSaved={() => setSelectedBudget(undefined)}
-          key={selectedBudget.id}
-        />
-      )}
+      {/* Add/Edit Dialog */}
+      <AddBudgetDialog
+        open={isBudgetDialogOpen}
+        onOpenChange={handleDialogStateChange}
+        initialData={selectedBudget}
+        month={monthKey}
+        key={selectedBudget?.id || `add-${monthKey}`}
+      />
     </div>
   );
 };

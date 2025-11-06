@@ -1,23 +1,19 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { PlusCircle } from "lucide-react";
+import { format } from "date-fns";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { BudgetForm } from "./BudgetForm";
 import { Budget } from "@/lib/supabase/budgets";
-import { format, startOfMonth } from "date-fns";
 
 interface AddBudgetDialogProps {
   initialData?: Budget;
-  trigger?: React.ReactNode;
   onBudgetSaved?: () => void;
   month: string; // YYYY-MM-DD format
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function AddBudgetDialog({ initialData, trigger, onBudgetSaved, month }: AddBudgetDialogProps) {
-  const [open, setOpen] = useState(false);
-
+export function AddBudgetDialog({ initialData, onBudgetSaved, month, open, onOpenChange }: AddBudgetDialogProps) {
   const handleSuccess = () => {
-    setOpen(false);
+    onOpenChange(false);
     if (onBudgetSaved) {
       onBudgetSaved();
     }
@@ -26,15 +22,7 @@ export function AddBudgetDialog({ initialData, trigger, onBudgetSaved, month }: 
   const title = initialData ? `Edit Budget for ${initialData.category}` : `Set New Budget for ${format(new Date(month), 'MMMM yyyy')}`;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Set Budget
-          </Button>
-        )}
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
